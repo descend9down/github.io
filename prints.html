@@ -1,18 +1,20 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DESCEND9DOWN — Prints</title>
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@300;400;600&family=VT323&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap');
 :root {
   --black: #000;
   --void: #0a0008;
   --accent: #8b0000;
   --accent-light: #e05050;
   --accent-glow: rgba(180, 20, 20, 0.25);
+  --text-dim: rgba(139,0,0,0.4);
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
 html, body { width: 100%; background: var(--black); color: var(--accent-light); font-family: 'Rajdhani', sans-serif; overflow-x: hidden; }
@@ -27,6 +29,65 @@ body::before {
   opacity: 0.35;
 }
 
+/* ── NAV ── */
+nav {
+  position: fixed; top:0; left:0; right:0; z-index:100;
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 18px 32px;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.95), transparent);
+}
+.nav-brand {
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  color: var(--accent-light);
+  text-decoration: none;
+}
+.nav-links {
+  display: flex; gap: 8px; align-items: center;
+}
+.nav-links a {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-decoration: none;
+  padding: 5px 12px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  transition: all 0.25s ease;
+  color: rgba(139,0,0,0.4);
+}
+.nav-links a[data-page="gallery"]:hover,
+.nav-links a[data-page="gallery"].active {
+  color: #9b7fd4;
+  border-color: rgba(155,127,212,0.45);
+  background: rgba(155,127,212,0.08);
+  text-shadow: 0 0 8px rgba(155,127,212,0.6);
+}
+.nav-links a[data-page="prints"]:hover,
+.nav-links a[data-page="prints"].active {
+  color: #c0392b;
+  border-color: rgba(192,57,43,0.45);
+  background: rgba(192,57,43,0.08);
+  text-shadow: 0 0 8px rgba(192,57,43,0.6);
+}
+.nav-links a[data-page="archive"]:hover,
+.nav-links a[data-page="archive"].active {
+  color: #c8922a;
+  border-color: rgba(200,146,42,0.45);
+  background: rgba(200,146,42,0.08);
+  text-shadow: 0 0 8px rgba(200,146,42,0.35);
+}
+.nav-links a[data-page="d9s"]:hover,
+.nav-links a[data-page="d9s"].active {
+  color: #00d4c8;
+  border-color: rgba(0,212,200,0.45);
+  background: rgba(0,212,200,0.08);
+  text-shadow: 0 0 8px rgba(0,212,200,0.6);
+}
+
 /* HERO */
 .hero {
   min-height: 52vh;
@@ -34,7 +95,7 @@ body::before {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 100px 48px 60px;
+  padding: 140px 48px 60px;
   position: relative;
 }
 .hero::after {
@@ -120,7 +181,6 @@ body::before {
   padding: 0 48px 120px;
   animation: fadeUp 1.2s 0.4s ease both;
 }
-
 .print-item {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -131,27 +191,19 @@ body::before {
   cursor: pointer;
   background: #0a0008;
 }
-
 .print-item-reverse .print-info {
   border-left: 1px solid rgba(139,0,0,0.08);
   border-right: none;
 }
-.print-item-reverse:hover .print-info {
-  border-color: rgba(139,0,0,0.3);
-}
-.print-item-reverse .print-arrow {
-  right: auto;
-  left: 48px;
-}
-
+.print-item-reverse:hover .print-info { border-color: rgba(139,0,0,0.3); }
+.print-item-reverse .print-arrow { right: auto; left: 48px; }
 .print-img-wrap {
   position: relative;
   aspect-ratio: 16/9;
   overflow: hidden;
 }
 .print-img {
-  width: 100%;
-  height: 100%;
+  width: 100%; height: 100%;
   object-fit: cover;
   transition: transform 0.8s cubic-bezier(0.16,1,0.3,1), filter 0.6s ease;
   filter: brightness(0.75) saturate(0.85);
@@ -160,7 +212,6 @@ body::before {
   transform: scale(1.03);
   filter: brightness(0.95) saturate(1.1);
 }
-
 .print-info {
   display: flex;
   flex-direction: column;
@@ -175,132 +226,73 @@ body::before {
   border-color: rgba(139,0,0,0.3);
   background: rgba(139,0,0,0.03);
 }
-
 .print-number {
-  font-size: 9px;
-  letter-spacing: 4px;
-  color: rgba(139,0,0,0.4);
-  margin-bottom: 20px;
+  font-size: 9px; letter-spacing: 4px;
+  color: rgba(139,0,0,0.4); margin-bottom: 20px;
 }
 .print-band {
   font-family: 'Cinzel', serif;
   font-size: clamp(22px, 3vw, 38px);
-  font-weight: 900;
-  letter-spacing: 4px;
+  font-weight: 900; letter-spacing: 4px;
   color: transparent;
   background: linear-gradient(135deg, #ffd5d5 0%, #e05050 50%, #8b0000 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  margin-bottom: 8px;
-  line-height: 1;
+  -webkit-background-clip: text; background-clip: text;
+  margin-bottom: 8px; line-height: 1;
 }
 .print-title {
   font-family: 'Cinzel', serif;
   font-size: clamp(12px, 1.5vw, 16px);
-  font-weight: 400;
-  letter-spacing: 4px;
+  font-weight: 400; letter-spacing: 4px;
   color: rgba(224,80,80,0.5);
-  margin-bottom: 32px;
-  text-transform: uppercase;
+  margin-bottom: 32px; text-transform: uppercase;
 }
-.print-meta {
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: rgba(139,0,0,0.35);
-}
+.print-meta { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(139,0,0,0.35); }
 .print-arrow {
-  position: absolute;
-  bottom: 48px;
-  right: 48px;
-  width: 40px;
-  height: 40px;
-  border: 1px solid rgba(139,0,0,0.2);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(224,80,80,0.3);
-  font-size: 14px;
-  transition: all 0.4s;
-  opacity: 0;
-  transform: translateY(6px);
+  position: absolute; bottom: 48px; right: 48px;
+  width: 40px; height: 40px;
+  border: 1px solid rgba(139,0,0,0.2); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(224,80,80,0.3); font-size: 14px;
+  transition: all 0.4s; opacity: 0; transform: translateY(6px);
 }
 .print-item:hover .print-arrow {
-  opacity: 1;
-  transform: translateY(0);
-  border-color: rgba(224,80,80,0.5);
-  color: rgba(224,80,80,0.8);
+  opacity: 1; transform: translateY(0);
+  border-color: rgba(224,80,80,0.5); color: rgba(224,80,80,0.8);
   box-shadow: 0 0 20px rgba(139,0,0,0.3);
 }
 
 /* LIGHTBOX */
 #lightbox {
-  position: fixed;
-  inset: 0;
+  position: fixed; inset: 0;
   background: rgba(0,0,0,0.97);
-  z-index: 500;
-  display: none;
-  align-items: center;
-  justify-content: center;
+  z-index: 500; display: none;
+  align-items: center; justify-content: center;
   padding: 80px 40px 40px;
 }
 #lightbox.active { display: flex; }
-#lightbox img {
-  max-width: 100%;
-  max-height: 85vh;
-  object-fit: contain;
-  border: 1px solid rgba(139,0,0,0.2);
-}
+#lightbox img { max-width: 100%; max-height: 85vh; object-fit: contain; border: 1px solid rgba(139,0,0,0.2); }
 #lightbox-close {
-  position: fixed;
-  top: 24px; right: 28px;
-  background: transparent;
-  border: 1px solid rgba(224,80,80,0.3);
+  position: fixed; top: 24px; right: 28px;
+  background: transparent; border: 1px solid rgba(224,80,80,0.3);
   color: rgba(224,80,80,0.7);
-  font-family: 'Rajdhani', sans-serif;
-  font-size: 10px;
-  letter-spacing: 4px;
-  text-transform: uppercase;
-  padding: 8px 18px;
-  cursor: pointer;
-  transition: all 0.2s;
-  z-index: 600;
+  font-family: 'Rajdhani', sans-serif; font-size: 10px; letter-spacing: 4px;
+  text-transform: uppercase; padding: 8px 18px; cursor: pointer; transition: all 0.2s; z-index: 600;
 }
-#lightbox-close:hover {
-  border-color: rgba(224,80,80,0.8);
-  color: #fff;
-  box-shadow: 0 0 16px rgba(139,0,0,0.4);
-}
+#lightbox-close:hover { border-color: rgba(224,80,80,0.8); color: #fff; box-shadow: 0 0 16px rgba(139,0,0,0.4); }
 #lightbox-caption {
-  position: fixed;
-  bottom: 32px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: 'Cinzel', serif;
-  font-size: 11px;
-  letter-spacing: 4px;
-  color: rgba(224,80,80,0.5);
-  text-transform: uppercase;
-  white-space: nowrap;
+  position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%);
+  font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 4px;
+  color: rgba(224,80,80,0.5); text-transform: uppercase; white-space: nowrap;
 }
 
 /* FOOTER */
 footer {
   padding: 48px;
   border-top: 1px solid rgba(139,0,0,0.12);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
+  display: flex; justify-content: center; align-items: center;
+  gap: 16px; flex-wrap: wrap;
 }
-.footer-text {
-  font-size: 9px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: rgba(139,0,0,0.4);
-}
+.footer-text { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(139,0,0,0.4); }
 
 /* ANIMATIONS */
 @keyframes fadeUp {
@@ -314,75 +306,35 @@ footer {
 }
 .shimmer-text {
   background: linear-gradient(90deg, rgba(224,80,80,0.45) 0%, rgba(224,80,80,0.45) 35%, rgba(255,200,200,0.95) 50%, rgba(224,80,80,0.45) 65%, rgba(224,80,80,0.45) 100%);
-  background-size: 600px 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: shimmer 5s 1s infinite ease-in-out;
+  background-size: 600px 100%; background-clip: text; -webkit-background-clip: text;
+  color: transparent; animation: shimmer 5s 1s infinite ease-in-out;
 }
 .shimmer-slow {
   background: linear-gradient(90deg, rgba(139,0,0,0.5) 0%, rgba(139,0,0,0.5) 35%, rgba(224,80,80,0.95) 50%, rgba(139,0,0,0.5) 65%, rgba(139,0,0,0.5) 100%);
-  background-size: 600px 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: shimmer 7s 0s infinite ease-in-out;
+  background-size: 600px 100%; background-clip: text; -webkit-background-clip: text;
+  color: transparent; animation: shimmer 7s 0s infinite ease-in-out;
 }
 
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: #000; }
 ::-webkit-scrollbar-thumb { background: rgba(139,0,0,0.4); }
 
-/* ── PILL NAV ─────────────────────────────────────────── */
-.pill-nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  padding: 18px 0 10px;
-  flex-wrap: wrap;
-  position: relative;
-  z-index: 10;
+@media (max-width:600px) {
+  nav { padding:14px 18px; }
+  .nav-links a { font-size:9px; padding:4px 8px; }
 }
-.pill-nav a {
-  font-family: 'Cinzel', serif;
-  font-size: 0.72rem;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  text-decoration: none;
-  padding: 6px 18px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.55);
-  background: rgba(255,255,255,0.04);
-  transition: color 0.25s, border-color 0.25s, background 0.25s, box-shadow 0.25s;
-  white-space: nowrap;
-}
-.pill-nav a:hover {
-  color: #fff;
-  border-color: var(--nav-accent);
-  background: rgba(255,255,255,0.07);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--nav-accent) 40%, transparent);
-}
-.pill-nav a.active {
-  color: #fff;
-  border-color: var(--nav-accent);
-  background: color-mix(in srgb, var(--nav-accent) 18%, transparent);
-  box-shadow:
-    0 0 8px color-mix(in srgb, var(--nav-accent) 60%, transparent),
-    0 0 20px color-mix(in srgb, var(--nav-accent) 30%, transparent);
-  font-weight: 600;
-}
-/* ── END PILL NAV ─────────────────────────────────────── */
 </style>
 </head>
 <body>
 
-<nav class="pill-nav" style="--nav-accent: #dc2626;">
-  <a href="index.html">Gallery</a>
-  <a href="prints.html" class="active">Prints</a>
-  <a href="archive.html">Archive</a>
-  <a href="descend9sound.html">D9S</a>
+<nav>
+  <a href="index.html" class="nav-brand">DESCEND9DOWN</a>
+  <div class="nav-links">
+    <a href="index.html"         data-page="gallery">GALLERY</a>
+    <a href="prints.html"        data-page="prints" class="active">PRINTS</a>
+    <a href="archive.html"       data-page="archive">ARCHIVE</a>
+    <a href="descend9sound.html" data-page="d9s">D9S</a>
+  </div>
 </nav>
 
 <div class="hero">
@@ -461,7 +413,6 @@ footer {
   <span class="footer-text shimmer-slow">Watermarked 2026</span>
 </footer>
 
-<!-- LIGHTBOX -->
 <div id="lightbox">
   <button id="lightbox-close" onclick="closeLightbox()">✕ &nbsp; Close</button>
   <img id="lightbox-img" src="" alt="" />
