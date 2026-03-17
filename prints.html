@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DESCEND9DOWN — Prints</title>
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap');
 :root {
@@ -369,53 +368,19 @@ footer {
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: #000; }
 ::-webkit-scrollbar-thumb { background: rgba(139,0,0,0.4); }
-/* ── PILL NAV ─────────────────────────────────────────── */
-.pill-nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-  padding: 18px 0 10px;
-  flex-wrap: wrap;
-  position: relative;
-  
-  padding: 6px 18px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.15);
-  color: rgba(255,255,255,0.55);
-  background: rgba(255,255,255,0.04);
-  transition: color 0.25s, border-color 0.25s, background 0.25s, box-shadow 0.25s;
-  white-space: nowrap;
-}
-
-.pill-nav a:hover {
-  color: #fff;
-  border-color: var(--nav-accent);
-  background: rgba(255,255,255,0.07);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--nav-accent) 40%, transparent);
-}
-
-.pill-nav a.active {
-  color: #fff;
-  border-color: var(--nav-accent);
-  background: color-mix(in srgb, var(--nav-accent) 18%, transparent);
-  box-shadow:
-    0 0 8px color-mix(in srgb, var(--nav-accent) 60%, transparent),
-    0 0 20px color-mix(in srgb, var(--nav-accent) 30%, transparent);
-  font-weight: 600;
-}
-/* ── END PILL NAV ─────────────────────────────────────── */
 </style>
 </head>
 <body>
-  <nav class="pill-nav" style="--nav-accent: #dc2626;">
-  <a href="index.html">Gallery</a>
-  <a href="prints.html" class="active">Prints</a>
-  <a href="archive.html">Archive</a>
-  <a href="descend9sound.html">D9S</a>
-</nav>
 
-
+<header>
+  <a href="index.html" class="site-title">DESCEND9DOWN</a>
+  <div class="header-line"></div>
+  <nav>
+    <a href="index.html">Gallery</a>
+    <a href="prints.html" class="active">Prints</a>
+    <a href="archive.html">Archive</a>
+  </nav>
+</header>
 
 <div class="hero">
   <p class="hero-eyebrow">Unofficial Gig Poster Series</p>
