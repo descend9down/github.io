@@ -1,1 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DESCEND9DOWN — OMNIA</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=VT323&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bone:        #f0e8d5;
+      --bone-dim:    #d4c9b0;
+      --bone-dark:   #a89880;
+      --bone-darker: #6b5c48;
+      --ink:         #1a1410;
+      --ink-soft:    #2e2620;
+      --ink-dim:     rgba(26, 20, 16, 0.55);
+      --border:      rgba(107, 92, 72, 0.25);
+      --border-strong: rgba(107, 92, 72, 0.5);
+      --panel:       rgba(240, 232, 213, 0.85);
+      --scanline:    rgba(107, 92, 72, 0.02);
+    }
 
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bone);
+      color: var(--ink);
+      font-family: 'Share Tech Mono', monospace;
+      min-height: 100vh;
+      overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    /* NOISE */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+      opacity: 0.4;
+      pointer-events: none;
+      z-index: 9997;
+      mix-blend-mode: multiply;
+    }
+
+    /* GRID BG */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(107,92,72,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(107,92,72,0.06) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 56px;
+      background: rgba(240, 232, 213, 0.96);
+      border-bottom: 1px solid var(--border-strong);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      z-index: 1000;
+      backdrop-filter: blur(14px);
+    }
+
+    .nav-brand {
+      font-family: 'Cinzel', serif;
+      font-size: 1.05rem;
+      font-weight: 900;
+      letter-spacing: 0.15em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-family: 'Cinzel', serif;
+      font-size: 0.68rem;
+      letter-spacing: 0.2em;
+      text-decoration: none;
+      color: var(--bone-dark);
+      transition: color 0.2s;
+      text-transform: uppercase;
+    }
+
+    .nav-links a:hover { color: var(--ink); }
+    .nav-links a[data-page="omnia"] {
+      color: var(--ink);
+      font-weight: 700;
+      border-bottom: 1px solid var(--ink);
+      padding-bottom: 2px;
+    }
+
+    /* MAIN */
+    main {
+      position: relative;
+      z-index: 1;
+      padding-top: 56px;
+    }
+
+    /* HERO */
+    .hero {
+      padding: 5rem 3rem 2.5rem;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-eyebrow {
+      font-family: 'VT323', monospace;
+      font-size: 0.9rem;
+      color: var(--bone-dark);
+      letter-spacing: 0.45em;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-title {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(3rem, 8vw, 7rem);
+      font-weight: 900;
+      letter-spacing: 0.2em;
+      color: var(--ink);
+      line-height: 0.9;
+      margin-bottom: 1.5rem;
+      animation: fade-in 1s ease both;
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero-meta {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .hero-count {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--bone-dark);
+      letter-spacing: 0.2em;
+    }
+
+    .hero-rule {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, var(--bone-dark), transparent);
+    }
+
+    /* GRID */
+    .works-section {
+      padding: 3rem;
+    }
+
+    .works-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .work-item {
+      position: relative;
+      background: var(--bone);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    /* variable aspect ratios for visual interest */
+    .work-item:nth-child(1) { aspect-ratio: 3/4; }
+    .work-item:nth-child(2) { aspect-ratio: 16/9; grid-column: span 2; }
+    .work-item:nth-child(3) { aspect-ratio: 16/9; grid-column: span 2; }
+    .work-item:nth-child(4) { aspect-ratio: 3/4; }
+    .work-item:nth-child(5) { aspect-ratio: 4/3; }
+    .work-item:nth-child(6) { aspect-ratio: 3/4; }
+
+    .work-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.6s ease, filter 0.4s ease;
+      filter: saturate(0.92) brightness(0.97);
+    }
+
+    .work-item:hover img {
+      transform: scale(1.03);
+      filter: saturate(1.05) brightness(1.02);
+    }
+
+    /* info overlay */
+    .work-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 1.2rem 1.4rem;
+      background: linear-gradient(to top, rgba(240,232,213,0.97) 0%, rgba(240,232,213,0.6) 60%, transparent 100%);
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+    }
+
+    .work-item:hover .work-info {
+      transform: translateY(0);
+    }
+
+    .work-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--ink);
+      letter-spacing: 0.12em;
+      margin-bottom: 0.2rem;
+    }
+
+    .work-meta {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--bone-darker);
+      letter-spacing: 0.1em;
+    }
+
+    /* always-visible title strip for non-hover */
+    .work-strip {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 0.6rem 1rem;
+      background: linear-gradient(to top, rgba(240,232,213,0.9), transparent);
+    }
+
+    .work-strip-title {
+      font-family: 'VT323', monospace;
+      font-size: 0.85rem;
+      color: var(--ink-dim);
+      letter-spacing: 0.15em;
+    }
+
+    /* ABOUT */
+    .about-strip {
+      border-top: 1px solid var(--border);
+      padding: 3rem;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 3rem;
+      align-items: start;
+    }
+
+    .about-mark {
+      font-family: 'Cinzel', serif;
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: var(--ink);
+      letter-spacing: 0.2em;
+      line-height: 1;
+    }
+
+    .about-mark span {
+      display: block;
+      font-size: 0.7rem;
+      font-family: 'VT323', monospace;
+      color: var(--bone-dark);
+      letter-spacing: 0.4em;
+      margin-top: 0.4rem;
+    }
+
+    .about-text p {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.76rem;
+      color: var(--bone-darker);
+      line-height: 1.85;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.5rem;
+    }
+
+    .about-text p:last-child { margin-bottom: 0; }
+    .about-text strong { color: var(--ink); font-weight: normal; }
+
+    /* FOOTER */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .footer-brand {
+      font-family: 'Cinzel', serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.25em;
+      color: var(--bone-dark);
+    }
+
+    .footer-copy {
+      font-family: 'VT323', monospace;
+      font-size: 0.82rem;
+      color: var(--bone-dark);
+      letter-spacing: 0.15em;
+    }
+
+    /* LIGHTBOX */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(240,232,213,0.97);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .lightbox.active { display: flex; }
+
+    .lightbox-inner {
+      position: relative;
+      max-width: 90vw;
+      max-height: 90vh;
+    }
+
+    .lightbox-inner img {
+      max-width: 100%;
+      max-height: 88vh;
+      object-fit: contain;
+      display: block;
+      box-shadow: 0 8px 60px rgba(26,20,16,0.2);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: -2rem;
+      right: 0;
+      font-family: 'VT323', monospace;
+      font-size: 1rem;
+      color: var(--bone-darker);
+      letter-spacing: 0.2em;
+      cursor: pointer;
+    }
+
+    .lightbox-caption {
+      position: absolute;
+      bottom: -2rem;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      color: var(--bone-darker);
+      letter-spacing: 0.2em;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .works-grid { grid-template-columns: 1fr 1fr; }
+      .work-item:nth-child(2),
+      .work-item:nth-child(3) { grid-column: span 1; aspect-ratio: 1; }
+      .about-strip { grid-template-columns: 1fr; gap: 1.5rem; }
+      footer { flex-direction: column; gap: 0.5rem; text-align: center; }
+    }
+
+    @media (max-width: 600px) {
+      .works-grid { grid-template-columns: 1fr; }
+      .work-item { aspect-ratio: 4/3 !important; grid-column: span 1 !important; }
+      .works-section { padding: 1rem; }
+      .hero { padding: 3rem 1.5rem 2rem; }
+      .nav-links { gap: 1rem; }
+      .nav-links a { font-size: 0.58rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="grid-bg"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="index.html" class="nav-brand">DESCEND9DOWN</a>
+    <ul class="nav-links">
+      <li><a href="index.html"   data-page="gallery">PLEROMA</a></li>
+      <li><a href="omnia.html"   data-page="omnia">OMNIA</a></li>
+      <li><a href="prints.html"  data-page="archetypes">ARCHETYPES</a></li>
+      <li><a href="archive.html" data-page="archive">ARCHIVE</a></li>
+      <li><a href="https://descend9down.github.io/descend9sound" data-page="d9s">D9S</a></li>
+    </ul>
+  </nav>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-eyebrow">// COMPLETE WORKS · ALL TERRITORIES</div>
+      <h1 class="hero-title">OMNIA</h1>
+      <div class="hero-meta">
+        <span class="hero-count">6 WORKS</span>
+        <div class="hero-rule"></div>
+        <span class="hero-count">DESCEND9DOWN · 2017 — PRESENT</span>
+      </div>
+    </section>
+
+    <!-- WORKS -->
+    <section class="works-section">
+      <div class="works-grid">
+
+        <div class="work-item"
+             data-img="omnia/He_Who_Fights_With_Monsters.png"
+             data-title="He Who Fights With Monsters">
+          <img src="omnia/He_Who_Fights_With_Monsters.png"
+               alt="He Who Fights With Monsters" loading="lazy" />
+          <div class="work-info">
+            <div class="work-title">He Who Fights With Monsters</div>
+            <div class="work-meta">Digital · Mixed Media · DESCEND9DOWN</div>
+          </div>
+        </div>
+
+        <div class="work-item"
+             data-img="omnia/Demiurge.png"
+             data-title="Demiurge">
+          <img src="omnia/Demiurge.png"
+               alt="Demiurge" loading="lazy" />
+          <div class="work-info">
+            <div class="work-title">Demiurge</div>
+            <div class="work-meta">Digital · DESCEND9DOWN</div>
+          </div>
+        </div>
+
+        <div class="work-item"
+             data-img="omnia/The_Collective.png"
+             data-title="The Collective">
+          <img src="omnia/The_Collective.png"
+               alt="The Collective" loading="lazy" />
+          <div class="work-info">
+            <div class="work-title">The Collective</div>
+            <div class="work-meta">Digital · Sacred Geometry · DESCEND9DOWN</div>
+          </div>
+        </div>
+
+        <div class="work-item"
+             data-img="omnia/Persephone.png"
+             data-title="Persephone">
+          <img src="omnia/Persephone.png"
+               alt="Persephone" loading="lazy" />
+          <div class="work-info">
+            <div class="work-title">Persephone</div>
+            <div class="work-meta">Digital · DESCEND9DOWN</div>
+          </div>
+        </div>
+
+        <div class="work-item"
+             data-img="omnia/Disastro.png"
+             data-title="Disastro">
+          <img src="omnia/Disastro.png"
+               alt="Disastro" loading="lazy" />
+          <div class="work-info">
+            <div class="work-title">Disastro</div>
+            <div class="work-meta">Digital · Sacred Geometry · DESCEND9DOWN</div>
+          </div>
+        </div>
+
+        <div class="work-item"
+             data-img="omnia/The_Fool.png"
+             data-title="The Fool">
+          <img src="omnia/The_Fool.png"
+               alt="The Fool" loading="lazy" />
+          <div class="work-info">
+            <div class="work-title">The Fool</div>
+            <div class="work-meta">Digital · Tarot · DESCEND9DOWN</div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="about-strip">
+      <div class="about-mark">
+        OMNIA
+        <span>EST. 2017</span>
+      </div>
+      <div class="about-text">
+        <p>Omnia....she is desire, she is aspiration, she is resilience and breath. Omnia is all things that are in me.</p>
+        <p>We are the collection that spans styles and time. No single aesthetic. No single thread. Everything. The sum of All.</p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-brand">DESCEND9DOWN / OMNIA</span>
+    <span class="footer-copy">All works protected · ©DESCEND9DOWN · Watermarked · 2026</span>
+  </footer>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-inner">
+      <div class="lightbox-close">[ CLOSE × ]</div>
+      <img src="" alt="" id="lightbox-img" />
+      <div class="lightbox-caption" id="lightbox-caption"></div>
+    </div>
+  </div>
+
+  <script>
+    const lightbox    = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxCap = document.getElementById('lightbox-caption');
+
+    document.querySelectorAll('.work-item').forEach(item => {
+      item.addEventListener('click', () => {
+        lightboxImg.src = item.dataset.img;
+        lightboxCap.textContent = item.dataset.title;
+        lightbox.classList.add('active');
+      });
+    });
+
+    lightbox.addEventListener('click', () => lightbox.classList.remove('active'));
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') lightbox.classList.remove('active');
+    });
+  </script>
+
+</body>
+</html>
